@@ -11,42 +11,46 @@ add_library(Msgpack::Msgpack ALIAS Msgpack)
 target_compile_features(Msgpack INTERFACE cxx_std_17)
 
 target_include_directories(Msgpack
-                           INTERFACE
-                           $<INSTALL_INTERFACE:include>
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                           )
+    INTERFACE
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
-install(TARGETS Msgpack
+if (MESSAGEPACK_INSTALL)
+    install(TARGETS Msgpack
         EXPORT MsgpackTargets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
+    )
 
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-set(MSGPACK_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Msgpack")
+    set(MSGPACK_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Msgpack")
 
-install(EXPORT MsgpackTargets
+    install(EXPORT MsgpackTargets
         FILE MsgpackTargets.cmake
         NAMESPACE Msgpack::
         DESTINATION ${MSGPACK_CMAKE_CONFIG_DESTINATION})
 
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/MsgpackConfigVersion.cmake
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion
-)
-configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/MsgpackConfig.cmake.in
-                              ${CMAKE_CURRENT_BINARY_DIR}/MsgpackConfig.cmake
-                              INSTALL_DESTINATION ${MSGPACK_CMAKE_CONFIG_DESTINATION}
-                              )
+    )
+    configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/MsgpackConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/MsgpackConfig.cmake
+        INSTALL_DESTINATION ${MSGPACK_CMAKE_CONFIG_DESTINATION}
+    )
 
-install(FILES
+    install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/MsgpackConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/MsgpackConfigVersion.cmake
         DESTINATION ${MSGPACK_CMAKE_CONFIG_DESTINATION})
 
-export(EXPORT MsgpackTargets FILE ${CMAKE_CURRENT_BINARY_DIR}/MsgpackTargets.cmake NAMESPACE Msgpack::)
-export(PACKAGE Msgpack)
+    export(EXPORT MsgpackTargets FILE ${CMAKE_CURRENT_BINARY_DIR}/MsgpackTargets.cmake NAMESPACE Msgpack::)
+    export(PACKAGE Msgpack)
+endif ()
 
-add_subdirectory(tests)
+if (MESSAGEPACK_ENABLE_TESTS)
+    add_subdirectory(tests)
+endif ()
