@@ -1,3 +1,3 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.10...3.28)
 
 add_subdirectory(msgpack)
